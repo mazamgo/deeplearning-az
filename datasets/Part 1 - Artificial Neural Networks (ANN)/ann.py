@@ -25,13 +25,22 @@ import pandas as pd
 # Importar el data set
 dataset = pd.read_csv('Churn_Modelling.csv')
 
+#Seleccionar las Variables Independiente y dependientes.
 X = dataset.iloc[:, 3:13].values
 y = dataset.iloc[:, 13].values
 
-# Codificar datos categóricos
+
+# Codificar datos categóricos que conviene recuperar
+#Las variables categoricas no vienen representada en numero sino por una palabra o string.
+#entonces necesitan ser codificadas por ejem. el Pais,Genero.
+#Codigo para codificar las variables categoricas a dami, se trata de traducir todo
+#La variables Dami es una columna para cada una de la categorias en el interior un cero o uno respectivamente.
+# se trata de convertir todo a valores numericos.
+
 from sklearn.preprocessing import LabelEncoder
 labelencoder_X_1 = LabelEncoder()
 X[:, 1] = labelencoder_X_1.fit_transform(X[:, 1])
+
 labelencoder_X_2 = LabelEncoder()
 X[:, 2] = labelencoder_X_2.fit_transform(X[:, 2])
 
