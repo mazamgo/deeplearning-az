@@ -29,15 +29,17 @@ dataset = pd.read_csv('Churn_Modelling.csv')
 X = dataset.iloc[:, 3:13].values
 y = dataset.iloc[:, 13].values
 
-
+#------------------------------------------------------------------------------
 # Codificar datos categóricos que conviene recuperar
-#Las variables categoricas no vienen representada en numero sino por una palabra o string.
-#entonces necesitan ser codificadas por ejem. el Pais,Genero.
-#Codigo para codificar las variables categoricas a dami, se trata de traducir todo
-#La variables Dami es una columna para cada una de la categorias en el interior un cero o uno respectivamente.
+# Las variables categoricas no vienen representada en numero sino por una palabra o string.
+# entonces necesitan ser codificadas por ejem. el Pais,Genero.
+# Codigo para codificar las variables categoricas a dami, se trata de traducir todo
+# La variables Dami es una columna para cada una de la categorias en el interior un cero o uno respectivamente.
 # se trata de convertir todo a valores numericos.
+#------------------------------------------------------------------------------
 
 from sklearn.preprocessing import LabelEncoder
+
 labelencoder_X_1 = LabelEncoder()
 X[:, 1] = labelencoder_X_1.fit_transform(X[:, 1])
 
@@ -47,6 +49,14 @@ X[:, 2] = labelencoder_X_2.fit_transform(X[:, 2])
 #El OneHotEncoder en las nuevas versiones está OBSOLETO
 #onehotencoder = OneHotEncoder(categorical_features=[1])
 #X = onehotencoder.fit_transform(X).toarray()
+
+#---------------------------------------------------------------------------------------------------
+# Ahora deberia de crearce las columnas ficticias (Variables Dami) que separen en uno o un cero respectivamente
+# para la primera columna deberia de transformace en la columan que tendra los cero, la columna que tendra los 
+# unos y en la columna que tendra 2 y para evitar la trampa de las variables ficticia, hay que colocar una 
+# columnas para cada una de las categorias excepto para una de ellas para evitar la multilinealidad.
+# la funcion en OneHotEncoder se va encargar de ella
+#-----------------------------------------------------------------------------------------------------
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -61,13 +71,26 @@ transformer = ColumnTransformer(
 )
 
 X = transformer.fit_transform(X)
+#Quitar la primera columna de los Franceses.
 X = X[:, 1:]
 
+#---------------------------------------------------------------------------------------
 # Dividir el data set en conjunto de entrenamiento y conjunto de testing
+# 0.2 para tener 8,000 observaciones para crear la red neuronal y las 2000 restante para validar.
+# asi se tiene mas elemento para la fase de entrenamiento
+#---------------------------------------------------------------------------------------
+
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
-# Escalado de variables
+#------------------------------------------------------------------------------------
+# Escalado de variables obligatorio esto no permite que ningua domine sobre el resto.
+# si no hace habra mucha confusion debito a que la red neuronal hace suma y productos
+# debido a que hay variables que destacan por encima del resto de variables (0,1,80,100000,etc)
+# cada uno esta en una escala diferente, esto jhace que el calculo sea mas preciso.
+# las var. quedan normalizadas en el rango cercano a cero.
+#-----------------------------------------------------------------------------------
+
 from sklearn.preprocessing import StandardScaler
 sc_X = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
