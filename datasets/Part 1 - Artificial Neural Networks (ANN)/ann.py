@@ -2,21 +2,15 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Apr 28 10:38:56 2019
-
 @author: juangabriel
 """
-
 # Redes Neuronales Artificales
-
 # Instalar Theano
 # pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
-
 # Instalar Tensorflow y Keras
 # conda install -c conda-forge keras
 
 # Parte 1 - Pre procesado de datos
-
-
 # Cómo importar las librerías
 import numpy as np
 import matplotlib.pyplot as plt
@@ -74,22 +68,22 @@ X = transformer.fit_transform(X)
 #Quitar la primera columna de los Franceses.
 X = X[:, 1:]
 
-#---------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
 # Dividir el data set en conjunto de entrenamiento y conjunto de testing
 # 0.2 para tener 8,000 observaciones para crear la red neuronal y las 2000 restante para validar.
 # asi se tiene mas elemento para la fase de entrenamiento
-#---------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
-#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
 # Escalado de variables obligatorio esto no permite que ningua domine sobre el resto.
 # si no hace habra mucha confusion debito a que la red neuronal hace suma y productos
 # debido a que hay variables que destacan por encima del resto de variables (0,1,80,100000,etc)
 # cada uno esta en una escala diferente, esto jhace que el calculo sea mas preciso.
 # las var. quedan normalizadas en el rango cercano a cero.
-#-----------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 
 from sklearn.preprocessing import StandardScaler
 sc_X = StandardScaler()
@@ -97,16 +91,39 @@ X_train = sc_X.fit_transform(X_train)
 X_test = sc_X.transform(X_test)
 
 
-# Parte 2 - Construir la RNA
+# Parte 2 - Construir la RNA para incializar la red neuronal
 
-# Importar Keras y librerías adicionales
+# Importar Keras y librerías adicionales Video # 32
+#-------------------------------------------------------------------------------------------------------------------
+# Libreria Dense es para Crear las capas e inicializar los pesos w con numeros pequeños.
+# La cantidad de nodos que tendra la casa entrada coincide con el numero de variables independiente
+# que resulta ser 11 nodos de entrada en la capa primera.
+# luego hay que establecer los nodos de activacion, las funciones de activacion:
+# funcion de activacion escalon, sigmoide, Rectificador lineal unitario, Tangente hiperbolica,
+# la funcion sigmoide nos da una probalidad, la funcion escalon es mas estricta quien deja y quien no deja el banco
+# si la variable dependiente es binaria (1,0) se puede utilizar la funcion sigmoide o escalon
+# en cambio el el fn de rectificador lineal es bantante interesante para activar las capas intermedias y para la capa
+# final la funcion sigmoide para conocer la probalidad de que un cliente deja o no el banco, esta fn mas interesante.
+#--------------------------------------------------------------------------------------------------------------------
 import keras
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense 
 from keras.layers import Dropout
 
-# Inicializar la RNA
+# Inicializar la RNA, el objeto a crear para la futura red Neuronal.
 classifier = Sequential()
+
+#-----------------------------------------------------------------------------------------------------------------------------------------
+# Añadir las capas de entrada y para la primera capa oculta tenemos 11 variables, vamos agregar la primera capa .add, 
+# units es el numero de nodos que queremos agregar a la capa oculta (salida) o numero de nodo de entrada para la siguiente capa, 
+# entonces Dense es la zona de la signasis donde hay q especificarle el
+# tamaño de E/S, Dense es para la conexion entre capas. y cuantos nodos va ha tener la capa oculta una regla puede ser la media de los nodos E/S
+# 11 nodos para la capa entrada y un nodo para la capa de salida, entonces la media entre 11 y 1 es 6. 
+# el kernel_initializer es para inicializar los pesos estos se deben de asignar de manera aleatoria, la fn uniform es para inicializarlo
+# manera uniforme pequeños cercanos a cero. 
+# para la fn de activacion vamos a utilizar relu es rectificador lineal unitario pero se pudo utilizar fn sigmoide, etc.
+# y para los nodos de entrada input_dim es la dimension de entrada. 
+#------------------------------------------------------------------------------------------------------------------------------------------
 
 # Añadir las capas de entrada y primera capa oculta
 classifier.add(Dense(units = 6, kernel_initializer = "uniform",  activation = "relu", input_dim = 11))
