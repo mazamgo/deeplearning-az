@@ -105,6 +105,11 @@ X_test = sc_X.transform(X_test)
 # en cambio el el fn de rectificador lineal es bantante interesante para activar las capas intermedias y para la capa
 # final la funcion sigmoide para conocer la probalidad de que un cliente deja o no el banco, esta fn mas interesante.
 #--------------------------------------------------------------------------------------------------------------------
+
+# https://quizdeveloper.com/faq/modulenotfounderror-no-module-named-tensorflow-in-python-aid1267
+# https://stackoverflow.com/questions/43592879/how-to-change-python-version-in-anaconda-spyder
+# conda install -c conda -force keras
+
 import keras
 from keras.models import Sequential
 from keras.layers import Dense 
@@ -129,11 +134,23 @@ classifier = Sequential()
 classifier.add(Dense(units = 6, kernel_initializer = "uniform",  activation = "relu", input_dim = 11))
 classifier.add(Dropout(p = 0.1))
 
-# Añadir la segunda capa oculta
+# Añadir la segunda capa oculta:
+#------------------------------------------------------------------------------------------------------------
+# La nueva capa oculta ya sabe lo espera de la anterior, entonces el parametro input_dim no es necesario
+# pq esta capa sabe como conectarces lo unica que tiene q especificarce es la capa de salida.
+#------------------------------------------------------------------------------------------------------------       
 classifier.add(Dense(units = 6, kernel_initializer = "uniform",  activation = "relu"))
 classifier.add(Dropout(p = 0.1))
 
-# Añadir la capa de salida
+# Añadir la capa de salida o final.
+#--------------------------------------------------------------------------------------------------------------
+# unicamente hay que indicar un nodo de salida, unicamente se va ha cambiar la fn. de activacion para que el resultado
+# que sea un probalidad par saber si el cliente se va o se queda. esto funciona siempre y cuando que se quiera clasificar 
+# en dos categorias se queda o se va, pero si fueran tres categorias por ejemplo (activa,pasiva,neutra) se tendria que 
+# cambiar varias cosas lo primero en la capa de salida ya no abria un nodo units = 1, sino el numero de clases
+# por tanto la variable depentiene tendria mas categorias en este caso tres posibles categorias se podria cambiar la fun 
+# activacion por escalon, rectificador lineal unitario para ver caules de la tres debe de activarse,
+#--------------------------------------------------------------------------------------------------------------
 classifier.add(Dense(units = 1, kernel_initializer = "uniform",  activation = "sigmoid"))
 
 # Compilar la RNA
